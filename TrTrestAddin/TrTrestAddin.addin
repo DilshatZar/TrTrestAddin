@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>Command TrTrestAddin</Text>
+    <Description>Some description for TrTrestAddin</Description>
+    <Assembly>TrTrestAddin.dll</Assembly>
+    <FullClassName>TrTrestAddin.Command</FullClassName>
+    <ClientId>20086b9f-3894-4b11-ae26-d555f5d49482</ClientId>
+    <VendorId>com.typepad.thebuildingcoder</VendorId>
+    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>Application TrTrestAddin</Name>
+    <Assembly>TrTrestAddin.dll</Assembly>
+    <FullClassName>TrTrestAddin.App</FullClassName>
+    <ClientId>699ba38c-b895-470f-a89d-2a807cc51038</ClientId>
+    <VendorId>com.typepad.thebuildingcoder</VendorId>
+    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+  </AddIn>
+</RevitAddIns>

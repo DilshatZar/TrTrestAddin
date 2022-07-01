@@ -1,0 +1,70 @@
+﻿<Window x:Class="TrTrestAddin.Windows.TRGR_GeneralConfigSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:local="clr-namespace:TrTrestAddin.Windows"
+        Topmost="True" ResizeMode="NoResize"
+        Title="Изменение параметров"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d" Height="260" Width="500">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="43*"/>
+            <RowDefinition Height="5*" MinHeight="40"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2"
+                    VerticalAlignment="Center">
+            <Grid>
+                <Button Content="Применить"
+                        Width="80" Height="24" 
+                        Margin="280,0,120,0"
+                        Focusable="True"
+                        Click="ApplyChanges_Click"/>
+                <Button Content="Отмена" 
+                        Width="80" Height="24"
+                        Margin="380,0,20,0"
+                        Focusable="True"
+                        Click="Cancel_Click"/>
+                <Button Content="По умолчанию"
+                        Width="90" Height="24"
+                        Margin="30, 0, 0, 0"
+                        HorizontalAlignment="Left"
+                        Focusable="True"
+                        Click="SetDefaultValues_Click"/>
+            </Grid>
+        </StackPanel>
+        <DataGrid Name="parametersTable" CanUserResizeColumns="True"
+                  Margin="5, 5, 0, 0" AutoGenerateColumns="False"
+                  ItemsSource="{Binding Parameters}"
+                  SelectedItem="{Binding SelectedParameter}"
+                  SelectionChanged="parametersTable_SelectionChanged">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Параметр" Binding="{Binding Path=Description}"
+                                    MinWidth="190"
+                                    MaxWidth="300"
+                                    CanUserReorder="False" CanUserSort="False"
+                                    IsReadOnly="True"/>
+                <DataGridTextColumn Header="Значение" Binding="{Binding Path=Value}"
+                                    MinWidth="80" Width="150"
+                                    CanUserReorder="False"
+                                    CanUserSort="False"/>
+                <DataGridTextColumn Binding="{Binding Path=Name}" Visibility="Hidden"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Button Click="GenerationAndFillingConfigSettings_Click"
+                    Width="80" Height="55" Margin="5">
+                <TextBlock TextAlignment="Center">Параметры<LineBreak/>генерации и<LineBreak/>заполнения</TextBlock>
+            </Button>
+            <Button Click="ApartmentographyConfigSettings_Click"
+                    Width="80" Height="55" Margin="5">
+                <TextBlock TextAlignment="Center">Параметры<LineBreak/>квартиро-<LineBreak/>графии</TextBlock>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,62 @@
+﻿<Window x:Class="TrTrestAddin.Windows.TRGR_GenerationAndFillingConfigSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:local="clr-namespace:TrTrestAddin.Windows"
+        mc:Ignorable="d" 
+        Topmost="True" ResizeMode="NoResize"
+        Title="Параметры генерации и заполнения помещений"
+        WindowStartupLocation="CenterScreen"
+        Height="180" Width="345">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0"
+                   VerticalAlignment="Center"
+                   TextAlignment="Right"
+                   Padding="5, 5, 5, 0">Марка помещения</TextBlock>
+        <ComboBox Name="roomTagsCmbBox"
+                  Grid.Row="0" Grid.Column="1"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                  Margin="5, 10, 5, 0"/>
+        <TextBlock Grid.Row="1"
+                   VerticalAlignment="Center"
+                   TextAlignment="Right"
+                   Padding="5">Типоразмер входной двери</TextBlock>
+        <ComboBox Name="entryDoorCmbBox"
+                  Grid.Row="1" Grid.Column="1"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                  Margin="5"/>
+        <CheckBox Name="deleteMOPCheckBox"
+                  Content="Удаление МОП'ов"
+                  Grid.Row="2" Grid.Column="1"
+                  VerticalAlignment="Center"
+                  Margin="5"/>
+        <StackPanel Grid.Row="4" Grid.ColumnSpan="2"
+                    VerticalAlignment="Center">
+            <Grid>
+                <Button Content="Применить"
+                        Width="80" Height="24"
+                        HorizontalAlignment="Right"
+                        Margin="0, 0, 120, 0"
+                        Focusable="True"
+                        Click="ApplyChanges_Click"/>
+                <Button Content="Отмена" 
+                        Width="80" Height="24"
+                        HorizontalAlignment="Right"
+                        Margin="0, 0, 20, 0"
+                        Focusable="True"
+                        Click="Cancel_Click"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>
