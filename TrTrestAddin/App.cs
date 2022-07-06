@@ -28,14 +28,14 @@ namespace TrTrestAddin
             #region Aparmentography
             RibbonPanel apartmnetographyPanel = a.CreateRibbonPanel(tabName, "Квартирография");
 
-            PushButtonData genRooms = new PushButtonData("RoomsGen", "Генерация\nи заполнение\nпомещений", Assembly.GetExecutingAssembly().Location, typeof(TRGR_RoomsGenerating).FullName);
+            PushButtonData genRooms = new PushButtonData("RoomsGen", "Генерация и\nзаполнение", Assembly.GetExecutingAssembly().Location, typeof(TRGR_RoomsGenerating).FullName);
             genRooms.ToolTip = "Генерация и определение типов помещений. " +
                 "Нахождение помещений для каждой квартиры с выставлением номера квартиры для каждого помещения и входной двери.";
             genRooms.LongDescription = "Определяются такие типы помещений, как: " +
-                "\"Жилая комната\", \"Коридор\", \"Лоджия\", \"Ванная\", \"Кухня\", \"Постирочная\", \"С.У.\". " +
-                "Для определения типа используются окна, двери, а также размещенные в помещении экземпляры категории PlumbingFixtures." +
-                "Помещения квартиры обнаруживаются по входной двери, описание типоразмера семейства которого соответствует \"Дверь.Квартирная\". " +
-                "Выставляются параметры \"ADSK_Номер квартиры\" и \"ADSK_Этаж\"";
+                "\"Жилая комната\", \"Коридор\", \"Лоджия\", \"Ванна\", \"Кухня\", \"Постирочная\", \"С.У.\". " +
+                "Для определения типа используются окна, двери, а также размещенные в помещении экземпляры категории PlumbingFixtures (Сантехника). " +
+                "Помещения квартиры обнаруживаются по входной двери, которая задается через параметры. " +
+                "Выставляются параметры \"ADSK_Номер квартиры\" и \"ADSK_Этаж\".";
             PushButton genRoomsBtn = apartmnetographyPanel.AddItem(genRooms) as PushButton;
             Image genRoomsImg = Properties.Resources.AR_RoomsGeneration;
             genRoomsBtn.LargeImage = ConvertToBitmap(genRoomsImg, new Size(32, 32));
@@ -43,11 +43,11 @@ namespace TrTrestAddin
 
             PushButtonData calcAreas = new PushButtonData("CalculateAreas", "Квартирография", Assembly.GetExecutingAssembly().Location, typeof(TRGR_Apartmentography).FullName);
             calcAreas.ToolTip = "Вычисление площади помещений для каждой квартиры.";
-            calcAreas.LongDescription = "Вычисления происходят только у квартир в активном виде и с заполненными параметрами " +
-                "\"ADSK_Номер квартиры\", \"ADSK_Тип помещения\", и \"ADSK_Коэффициент площади\". " +
-                "Производится проверка параметра \"ADSK_Коэффициент площади\" на наличие ошибок, при наличии таковых, выводится окно с перечислением ID помещений и соответствующими исправлениями. " +
-                "Производится изменение тега наименований на более компактный. " +
-                "В плане: добавить размещение дополнительных тегов для указания площади помещений и формы Квартирографии.";
+            calcAreas.LongDescription = "Вычисления происходят у квартир на всех этажах и с заполненными параметрами " +
+                "\"ADSK_Номер квартиры\", \"Имя\", и \"RM_Коэффициент площади\". " +
+                "Производится проверка параметра \"RM_Коэффициент площади\" на ошибоки, при наличии таковых выводится окно с перечислением ID помещений и соответствующими исправлениями. " +
+                "Производится изменение марки наименования помещения на более компактный. " +
+                "Добавлено размещение дополнительных тегов для указания площади помещений и формы Квартирографии. Необходимо указать в параметрках";
             PushButton calcAreasBtn = apartmnetographyPanel.AddItem(calcAreas) as PushButton;
             Image calcAreasImg = Properties.Resources.AR_Apartmentography;
             calcAreasBtn.LargeImage = ConvertToBitmap(calcAreasImg, new Size(32, 32));
@@ -56,7 +56,8 @@ namespace TrTrestAddin
             PushButtonData chgParametersBtnData = new PushButtonData("ChangeConfigSettings", "Изменить\nпараметры", Assembly.GetExecutingAssembly().Location, typeof(TRGR_ChangeConfigSettings).FullName);
             chgParametersBtnData.ToolTip = "Изменение параметров для квартирографии.";
             chgParametersBtnData.LongDescription = "Используется для редактирования таких параметров, как: \"Количество чисел после запятой\", применяемый для округления значений вычислений; " +
-                "\"Коэффициент площади лоджии\"; \"Коэффициент площади балкона\"; \"Коэффициент площади обычных помещений\"; \"Смещение комнаты сверху\"; \"Смещение комнаты снизу\".";
+                "\"Коэффициент площади лоджии\"; \"Коэффициент площади балкона\"; \"Коэффициент площади жилых/нежилых помещений\"; \"Смещение комнаты сверху\"; \"Смещение комнаты снизу\". " +
+                "Добавлены отдельные окна для редактирования параметров \"Квартирографии\" и \"Генерации и заполнения помещений\".";
             PushButton chgParametersBtn = apartmnetographyPanel.AddItem(chgParametersBtnData) as PushButton;
             Image chgParametersImg = Properties.Resources.settings_32;
             chgParametersBtn.LargeImage = ConvertToBitmap(chgParametersImg, new Size(32, 32));

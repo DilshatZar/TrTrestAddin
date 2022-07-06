@@ -14,8 +14,8 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="43*"/>
-            <RowDefinition Height="5*" MinHeight="40"/>
+            <RowDefinition />
+            <RowDefinition Height="34"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="1" Grid.ColumnSpan="2"
                     VerticalAlignment="Center">

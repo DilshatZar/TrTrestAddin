@@ -17,6 +17,7 @@ using System.Windows;
 using RevitApplication = Autodesk.Revit.ApplicationServices.Application;
 
 using TrTrestAddin.Windows;
+using TrTrestAddin.Model;
 #endregion
 
 namespace TrTrestAddin.Commands
@@ -30,7 +31,7 @@ namespace TrTrestAddin.Commands
         static Document doc;
         Phase phase;
 
-        TRGR_ConfigSettingsWindow config;
+        AllConfigParameters config;
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
@@ -40,7 +41,7 @@ namespace TrTrestAddin.Commands
             doc = uidoc.Document;
             phase = doc.Phases.get_Item(doc.Phases.Size - 1);
 
-            config = new TRGR_ConfigSettingsWindow();
+            config = new AllConfigParameters();
 
             // Взятие параметров конфигурации
 
@@ -49,29 +50,53 @@ namespace TrTrestAddin.Commands
             double defaultAreaCoef = 1.0;
             double upperOffset = 3300;
             double lowerOffset = 0;
+            string fullTagTypeFamily = config.GetStringValue("FullTagTypeFamily");
+            string fullTagType = config.GetStringValue("FullTagType");
+            int fullTagTypeId = config.GetIntegerValue("FullTagTypeId");
+            string areaTagTypeFamily = config.GetStringValue("AreaTagTypeFamily");
+            string areaTagType = config.GetStringValue("AreaTagType");
+            int areaTagTypeId = config.GetIntegerValue("AreaTagTypeId");
+            string basicTagFamily = config.GetStringValue("BasicRoomTagFamily");
+            string basicTag = config.GetStringValue("BasicRoomTag");
+            int basicTypeId = config.GetIntegerValue("BasicRoomTagId");
+            string entryDoorTypeFamily = config.GetStringValue("EntryDoorTypeFamily");
+            string entryDoorType = config.GetStringValue("EntryDoorType");
+            int entryDoorTypeId = config.GetIntegerValue("EntryDoorTypeId");
+            bool deleteMOP = config.GetBoolValue("DeleteMOP");
+
+            if (config.WrongElementTypeParameters(new List<Tuple<string, string, int>>
+                {
+                    new Tuple<string, string, int> ( fullTagTypeFamily, fullTagType, fullTagTypeId ),
+                    new Tuple<string, string, int> ( areaTagTypeFamily, areaTagType, areaTagTypeId ),
+                    new Tuple<string, string, int> ( basicTagFamily, basicTag, basicTypeId)
+                },
+                doc))
+            {
+                MessageBox.Show("Указаны неправильные марки для помещений.", "Ошибка считывания параметров.");
+                return Result.Failed;
+            }
+
+            if (config.WrongElementTypeParameters(new List<Tuple<string, string, int>>
+                {
+                    new Tuple<string, string, int> ( entryDoorTypeFamily, entryDoorType, entryDoorTypeId)
+                },
+                doc))
+            {
+                MessageBox.Show("Указан неправильный типоразмер входной двери.", "Ошибка считывания параметров.");
+                return Result.Failed;
+            }
+
             try
             {
-                loggieAreaCoef = double.Parse(config.GetParameterValue("LoggiaAreaCoef").Replace(".", ","));
-                balconyAreaCoef = double.Parse(config.GetParameterValue("BalconyAreaCoef").Replace(".", ","));
-                defaultAreaCoef = double.Parse(config.GetParameterValue("DefaultAreaCoef").Replace(".", ","));
-                upperOffset = double.Parse(config.GetParameterValue("RoomUpperOffset").Replace(".", ","));
-                lowerOffset = double.Parse(config.GetParameterValue("RoomLowerOffset").Replace(".", ","));
+                loggieAreaCoef = config.GetDoubleValue("LoggiaAreaCoef");
+                balconyAreaCoef = config.GetDoubleValue("BalconyAreaCoef");
+                defaultAreaCoef = config.GetDoubleValue("DefaultAreaCoef");
+                upperOffset = config.GetDoubleValue("RoomUpperOffset");
+                lowerOffset = config.GetDoubleValue("RoomLowerOffset");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
-                MessageBox.Show("Использование значений по умолчанию для параметров: \n" +
-                    "\"Коэффициент площади лоджии\": 0,5 \n" +
-                    "\"Коэффициент площади балкона\": 0,3 \n" +
-                    "\"Коэффициент площади обычных помещений\": 1,0" +
-                    "\"Смещение комнаты сверху\": 3300" +
-                    "\"Смещение комнаты снизу\": 0",
-                    "Ошибка считывания параметров.");
-                config.SetParameterValue("LoggiaAreaCoef", "0,5");
-                config.SetParameterValue("BalconyAreaCoef", "0,3");
-                config.SetParameterValue("DefaultAreaCoef", "0,1");
-                config.SetParameterValue("RoomUpperOffset", "3300");
-                config.SetParameterValue("RoomLowerOffset", "0");
+                MessageBox.Show(ex.Message, "Ошибка считывания параметров.");
             }
 
             IList<Room> roomsToRemove = new FilteredElementCollector(doc, doc.ActiveView.Id)
@@ -139,9 +164,11 @@ namespace TrTrestAddin.Commands
                     .ToList();
                 foreach (RoomTag roomTag in roomtags)
                 {
-                    if (roomTag.GetTypeId().IntegerValue != 159750 && roomTag.GetTypeId().IntegerValue != 159393)
+                    XYZ roomLocation = (roomTag.Room.Location as LocationPoint).Point;
+                    XYZ tagLocation = (roomTag.Location as LocationPoint).Point;
+                    if (roomLocation.IsAlmostEqualTo(tagLocation) || roomTag.GetTypeId().IntegerValue != fullTagTypeId && roomTag.GetTypeId().IntegerValue != areaTagTypeId)
                     {
-                        roomTag.ChangeTypeId(new ElementId(159738)); // !!Назначить ID из конфига!!
+                        roomTag.ChangeTypeId(new ElementId(basicTypeId));
                     }
                 }
                 t.Commit();
@@ -186,7 +213,7 @@ namespace TrTrestAddin.Commands
                 {
                     washers.Add(fixture);
                 }
-                else if (fixtureName.Contains("Ванная") || fixtureName.Contains("ДушевойПоддон"))
+                else if (fixtureName.Contains("Ванна") || fixtureName.Contains("ДушевойПоддон"))
                 {
                     baths.Add(fixture);
                 }
@@ -241,27 +268,22 @@ namespace TrTrestAddin.Commands
                     if (roomFixtures.Contains("Унитаз") && roomFixtures.Contains("Ванна"))
                     {
                         newRoom.get_Parameter(BuiltInParameter.ROOM_NAME).Set("С.У.");
-                        newRoom.LookupParameter("ADSK_Тип помещения").Set(2);
                     }
                     else if (!roomFixtures.Contains("Ванна") && roomFixtures.Contains("Умывальник") && roomFixtures.Contains("Унитаз"))
                     {
                         newRoom.get_Parameter(BuiltInParameter.ROOM_NAME).Set("Уборная");
-                        newRoom.LookupParameter("ADSK_Тип помещения").Set(2);
                     }
                     else if (!roomFixtures.Contains("Унитаз") && roomFixtures.Contains("Ванна"))
                     {
-                        newRoom.get_Parameter(BuiltInParameter.ROOM_NAME).Set("Вання");
-                        newRoom.LookupParameter("ADSK_Тип помещения").Set(2);
+                        newRoom.get_Parameter(BuiltInParameter.ROOM_NAME).Set("Ванная");
                     }
                     else if (!roomFixtures.Contains("Ванна") && !roomFixtures.Contains("Умывальник") && !roomFixtures.Contains("Унитаз") && roomFixtures.Contains("Стиральная машина"))
                     {
                         newRoom.get_Parameter(BuiltInParameter.ROOM_NAME).Set("Постирочная");
-                        newRoom.LookupParameter("ADSK_Тип помещения").Set(2);
                     }
                     else if (roomFixtures.Contains("Кухня"))
                     {
                         newRoom.get_Parameter(BuiltInParameter.ROOM_NAME).Set("Кухня");
-                        newRoom.LookupParameter("ADSK_Тип помещения").Set(2);
                     }
 
                     List<int> roomWindowsIds = new List<int>();
@@ -278,15 +300,13 @@ namespace TrTrestAddin.Commands
                         if (newRoom.Id.IntegerValue == elementId && newRoom.get_Parameter(BuiltInParameter.ROOM_NAME).AsString().Contains("Помещение"))
                         {
                             newRoom.get_Parameter(BuiltInParameter.ROOM_NAME).Set("Жилая комната");
-                            newRoom.LookupParameter("ADSK_Тип помещения").Set(1);
                         }
                     }
                     if (newRoom.get_Parameter(BuiltInParameter.ROOM_NAME).AsString() == "Помещение")
                     {
                         newRoom.get_Parameter(BuiltInParameter.ROOM_NAME).Set("Коридор");
-                        newRoom.LookupParameter("ADSK_Тип помещения").Set(2);
                     }
-                    newRoom.LookupParameter("ADSK_Коэффициент площади").Set(defaultAreaCoef);
+                    newRoom.LookupParameter("RM_Коэффициент площади").Set(defaultAreaCoef);
                 }
                 foreach (FamilyInstance door in doors)
                 {
@@ -294,8 +314,7 @@ namespace TrTrestAddin.Commands
                     if (doorFromRoom != null && door.Symbol.get_Parameter(BuiltInParameter.ALL_MODEL_DESCRIPTION).AsString().Contains("Балконная"))
                     {
                         doorFromRoom.get_Parameter(BuiltInParameter.ROOM_NAME).Set("Лоджия");
-                        doorFromRoom.LookupParameter("ADSK_Тип помещения").Set(3);
-                        doorFromRoom.LookupParameter("ADSK_Коэффициент площади").Set(loggieAreaCoef);
+                        doorFromRoom.LookupParameter("RM_Коэффициент площади").Set(loggieAreaCoef);
                     }
                 }
                 t.Commit();
@@ -305,7 +324,7 @@ namespace TrTrestAddin.Commands
                 .OfCategory(BuiltInCategory.OST_Doors)
                 .OfClass(typeof(FamilyInstance))
                 .Cast<FamilyInstance>()
-                .Where(door => door.Symbol.get_Parameter(BuiltInParameter.ALL_MODEL_DESCRIPTION).AsString().Contains("Дверь.Квартирная")) // Изменить подход поиска входных дверей на виде, используя конфиг
+                .Where(door => door.Symbol.Name.Equals(entryDoorType) && door.Symbol.Id.IntegerValue == entryDoorTypeId) // Изменить подход поиска входных дверей на виде, используя конфиг
                 .ToList();
             FilteredElementCollector allRooms = new FilteredElementCollector(doc, doc.ActiveView.Id).OfCategory(BuiltInCategory.OST_Rooms).WhereElementIsNotElementType();
 
@@ -316,11 +335,11 @@ namespace TrTrestAddin.Commands
                 {
                     List<Room> apartmentRooms = GetApartmentRooms(entryDoor.get_FromRoom(phase), allRooms, null, entryDoor); // Эта функция отвечает за нахождение всех комнат в картире
                     Level lvl = doc.GetElement(entryDoor.LevelId) as Level; // Часть, просто отвечающая за взятие номера квартиры, у нас по форме L01_001 с указанием уровня и номера квартиры
-                    string doorNumber = entryDoor.LookupParameter("ADSK_Номер квартиры").AsString();
+                    string doorNumber = entryDoor.LookupParameter("ADSK_Зона").AsString();
                     string apartmentNumber = null;
                     if (!doorNumber.Contains("L") && !doorNumber.Contains("_"))
                     {
-                        apartmentNumber = $"L{lvl.Name.Replace("Этаж ", "")}_{LeadingZeros(entryDoor.LookupParameter("ADSK_Номер квартиры").AsString())}";
+                        apartmentNumber = $"L{lvl.Name.Replace("Этаж ", "")}_{LeadingZeros(doorNumber)}";
                     }
                     else
                     {
@@ -338,24 +357,27 @@ namespace TrTrestAddin.Commands
                             MessageBox.Show(ex.Message, "Ошибка");
                         }
                     }
-                    entryDoor.LookupParameter("ADSK_Номер квартиры").Set(apartmentNumber);
+                    entryDoor.LookupParameter("ADSK_Зона").Set(apartmentNumber);
+                    entryDoor.LookupParameter("ADSK_Этаж").Set($"L{lvl.Name.Replace("Этаж ", "")}");
                 }
                 t.Commit();
             }
-
-            List<Room> MOP = new FilteredElementCollector(doc, doc.ActiveView.Id)
-                .OfCategory(BuiltInCategory.OST_Rooms)
-                .WhereElementIsNotElementType()
-                .Cast<Room>()
-                .Where(room => room.LookupParameter("ADSK_Номер квартиры").AsString() == null)
-                .ToList();
-            if (MOP.Count > 0)
+            if (deleteMOP)
             {
-                using (Transaction t = new Transaction(doc, "Удаление МОП-ов"))
+                List<Room> MOP = new FilteredElementCollector(doc, doc.ActiveView.Id)
+                    .OfCategory(BuiltInCategory.OST_Rooms)
+                    .WhereElementIsNotElementType()
+                    .Cast<Room>()
+                    .Where(room => room.LookupParameter("ADSK_Номер квартиры").AsString() == null)
+                    .ToList();
+                if (MOP.Count > 0)
                 {
-                    t.Start();
-                    doc.Delete(MOP.Select(room => room.Id).ToList());
-                    t.Commit();
+                    using (Transaction t = new Transaction(doc, "Удаление МОП-ов"))
+                    {
+                        t.Start();
+                        doc.Delete(MOP.Select(room => room.Id).ToList());
+                        t.Commit();
+                    }
                 }
             }
 
@@ -469,7 +491,7 @@ namespace TrTrestAddin.Commands
         }
         private static bool CoefsNotRight(Room room, double loggieCoef, double balconyCoef, double defaultCoef)
         {
-            double roomCoef = room.LookupParameter("ADSK_Коэффициент площади").AsDouble();
+            double roomCoef = room.LookupParameter("RM_Коэффициент площади").AsDouble();
             if (loggieCoef == roomCoef)
             {
                 return false;

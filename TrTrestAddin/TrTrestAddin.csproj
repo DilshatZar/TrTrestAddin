@@ -79,10 +79,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\ApartmentographyConfigViewModel.cs" />
     <Compile Include="ViewModel\GeneralConfigViewModel.cs" />
     <Compile Include="ViewModel\GenerationAndFillingConfigViewModel.cs" />
     <Compile Include="Windows\AnswerWindow.xaml.cs">
       <DependentUpon>AnswerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TRGR_ApartmentographyConfigSettings.xaml.cs">
+      <DependentUpon>TRGR_ApartmentographyConfigSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\TRGR_ConfigSettingsWindow.xaml.cs">
       <DependentUpon>TRGR_ConfigSettingsWindow.xaml</DependentUpon>
@@ -121,6 +125,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Windows\AnswerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\TRGR_ApartmentographyConfigSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

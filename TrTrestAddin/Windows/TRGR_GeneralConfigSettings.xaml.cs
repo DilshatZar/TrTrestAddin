@@ -64,7 +64,8 @@ namespace TrTrestAddin.Windows
 
         private void ApartmentographyConfigSettings_Click(object sender, RoutedEventArgs e)
         {
-
+            TRGR_ApartmentographyConfigSettings apgrSettings = new TRGR_ApartmentographyConfigSettings(doc);
+            apgrSettings.ShowDialog();
         }
     }
 }

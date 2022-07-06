@@ -1,4 +1,4 @@
-﻿<Window x:Class="TrTrestAddin.Windows.TRGR_GenerationAndFillingConfigSettings"
+﻿<Window x:Class="TrTrestAddin.Windows.TRGR_ApartmentographyConfigSettings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,25 +6,22 @@
         xmlns:local="clr-namespace:TrTrestAddin.Windows"
         mc:Ignorable="d" 
         Topmost="True" ResizeMode="NoResize"
-        Title="Параметры генерации и заполнения помещений"
         WindowStartupLocation="CenterScreen"
-        Height="264" Width="360">
+        Title="Параметры квартирографии"
+        Height="240" Width="360">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="24"/>
             <RowDefinition Height="34"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0"
-                   VerticalAlignment="Center"
-                   TextAlignment="Left"
-                   Padding="15, 0, 0, 0">Марка<LineBreak/>помещения</TextBlock>
-        <StackPanel Grid.Column="1"
+        <TextBlock TextAlignment="Left" Padding="15, 0, 0, 0"
+                   VerticalAlignment="Center">Полная марка<LineBreak/>квартиры</TextBlock>
+        <StackPanel Grid.Column="1" 
                     VerticalAlignment="Center" HorizontalAlignment="Stretch">
             <Grid>
                 <Grid.RowDefinitions>
@@ -34,23 +31,22 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Padding="5, 0, 0, 0">Семейство:</TextBlock>
-                <ComboBox Name="roomTagsFamilyCmbBox"
+                <ComboBox Name="FullTagFamilyCmbBox"
                           Grid.Row="1"
                           HorizontalAlignment="Stretch" VerticalAlignment="Center"
                           Margin="5, 0, 5, 0"
-                          SelectionChanged="roomTagsFamilyCmbBox_SelectionChanged"/>
+                          SelectionChanged="FullTagFamilyCmbBox_SelectionChanged"/>
                 <TextBlock Grid.Row="2" Padding="5, 0, 0, 0">Тип:</TextBlock>
-                <ComboBox Name="roomTagsCmbBox"
+                <ComboBox Name="FullTagCmbBox"
                           Grid.Row="3"
                           HorizontalAlignment="Stretch" VerticalAlignment="Center"
                           Margin="5, 0, 5, 0"/>
             </Grid>
         </StackPanel>
         <TextBlock Grid.Row="1"
-                   VerticalAlignment="Center"
-                   TextAlignment="Left"
-                   Padding="15, 0, 0, 0">Входная дверь<LineBreak/>квартиры</TextBlock>
-        <StackPanel Grid.Row="1" Grid.Column="1"
+                   TextAlignment="Left" Padding="15, 0, 0, 0"
+                   VerticalAlignment="Center">Марка площади<LineBreak/>помещения</TextBlock>
+        <StackPanel Grid.Column="1" Grid.Row="1"
                     VerticalAlignment="Center" HorizontalAlignment="Stretch">
             <Grid>
                 <Grid.RowDefinitions>
@@ -60,24 +56,19 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Padding="5, 0, 0, 0">Семейство:</TextBlock>
-                <ComboBox Name="entryDoorsFamilyCmbBox"
+                <ComboBox Name="AreaTagFamilyCmbBox"
                           Grid.Row="1"
                           HorizontalAlignment="Stretch" VerticalAlignment="Center"
                           Margin="5, 0, 5, 0"
-                          SelectionChanged="entryDoorsFamilyCmbBox_SelectionChanged"/>
+                          SelectionChanged="AreaTagFamilyCmbBox_SelectionChanged"/>
                 <TextBlock Grid.Row="2" Padding="5, 0, 0, 0">Тип:</TextBlock>
-                <ComboBox Name="entryDoorsCmbBox"
+                <ComboBox Name="AreaTagCmbBox"
                           Grid.Row="3"
                           HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                          Margin="5, 0, 5, 0"/>  
+                          Margin="5, 0, 5, 0"/>
             </Grid>
         </StackPanel>
-        <CheckBox Name="deleteMOPCheckBox"
-                  Content="Удаление МОП'ов"
-                  Grid.Row="2" Grid.Column="1"
-                  VerticalAlignment="Center"
-                  Margin="5"/>
-        <StackPanel Grid.Row="3" Grid.ColumnSpan="2"
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="2"
                     VerticalAlignment="Center">
             <Grid>
                 <Button Content="Применить"
